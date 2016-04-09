@@ -16,13 +16,48 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Get the user language preferences
-
+function setCookieLan(lan) {
+  var d = new Date();
+  d.setTime(d.getTime() + (99*24*60*60*1000));
+  var expires = "expires="+d.toUTCString()+";";
+  var path    = "path=/";
+  document.cookie = "lan=" + lan + ";" + expires +path;
+}
+function getCookieLan() {
+  var name = "lan=";
+  var ca = document.cookie.split(';');
+  _products = [];
+  var _cookieLan = "";
+  for(var i=0; i<ca.length; i++) {
+    if ( ca[i].indexOf(name) > -1){
+      _s = ca[i].split("=");
+      _cookieLan  = _s[1];
+    }
+  }
+  return _cookieLan;
+}
 try{
-  _lan = navigator.languages[0];
-
+  //try to get it from cookies
+  _cookieLan = getCookieLan();
+  if ( _cookieLan == ""){
+    _lan = navigator.languages[0];
+    setCookieLan(_lan);
+  }else{
+     _lan = _cookieLan;
+     setCookieLan(_lan);
+  }
 }catch(e){
   _lan = navigator.language;
+  setCookieLan(_lan);
 }
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+d.toUTCString()+";";
+  var path    = "path=/";
+  document.cookie = cname + "=" + cvalue + ";" + expires +path;
+}
+
 var panzerLan = {
 
   _lans: _lan,
@@ -54,10 +89,11 @@ var panzerLan = {
       }else if (lan == "es"){
         _translation = panzerlan_es.strings[_plan];
       }
+      setCookieLan(lan);
       $(this).text(_translation);
     });
     this.currentLan = lan;
-    
+
   }
 
 };
